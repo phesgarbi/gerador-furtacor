@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>GERADOR FURTA-COR · Baile do Momo</title>
+<style>
+:root{--fundo:#141416;--card:#1e1e22;--linha:#34343a;--txt:#ececf0;--sub:#9a9aa6;--acao:#ff6a1a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fundo);color:var(--txt);font:15px/1.35 -apple-system,"Helvetica Neue",Arial,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#0c0c0e;border-bottom:1px solid var(--linha);padding:10px 14px}
+.topo{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.topo h1{font-size:15px;margin:0;letter-spacing:.06em}
+.topo .info{color:var(--sub);font-size:13px}
+#palco{position:relative;width:100%;overflow:auto;background:
+  repeating-conic-gradient(#2a2a2e 0 25%,#1c1c20 0 50%) 0 0/20px 20px}
+#moldura{position:relative;line-height:0}
+#moldura canvas{display:block;width:100%;height:auto}
+#palco.real #moldura{width:max-content}
+#palco.real #moldura canvas{width:auto}
+.guia{position:absolute;top:0;bottom:0;width:0;border-left:1px dashed #fff;mix-blend-mode:difference;pointer-events:none}
+main{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;padding:12px 14px 40px}
+section{background:var(--card);border:1px solid var(--linha);border-radius:8px;padding:12px}
+section h2{font-size:12px;letter-spacing:.1em;color:var(--sub);margin:0 0 10px}
+label.l{display:grid;grid-template-columns:120px 1fr 46px;gap:8px;align-items:center;margin:7px 0}
+label.l span.v{color:var(--sub);font-variant-numeric:tabular-nums;text-align:right;font-size:13px}
+select,input[type=text],input[type=number]{background:#0f0f11;color:var(--txt);border:1px solid var(--linha);border-radius:5px;padding:6px 8px;font:inherit;width:100%}
+input[type=range]{width:100%;accent-color:var(--acao)}
+input[type=checkbox]{accent-color:var(--acao);width:17px;height:17px;vertical-align:-3px}
+button{background:#2b2b31;color:var(--txt);border:1px solid var(--linha);border-radius:5px;padding:7px 11px;font:inherit;cursor:pointer}
+button:hover{border-color:var(--acao)}
+button.p{background:var(--acao);border-color:var(--acao);color:#111;font-weight:600}
+button:disabled{opacity:.45;cursor:default}
+.lin{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:7px 0}
+.cor{display:grid;grid-template-columns:22px 44px 1fr 30px 30px 30px;gap:6px;align-items:center;margin:5px 0}
+.cor input[type=color]{width:44px;height:30px;padding:0;border:1px solid var(--linha);background:none;border-radius:4px}
+.cor .n{color:var(--sub);font-size:12px;text-align:center}
+.cor button{padding:4px 0}
+#solta{border:1px dashed var(--linha);border-radius:6px;padding:14px;text-align:center;color:var(--sub);margin:8px 0}
+#solta.sobre{border-color:var(--acao);color:var(--txt)}
+.dica{color:var(--sub);font-size:12.5px;margin:6px 0 0}
+#barra{height:8px;background:#0f0f11;border-radius:4px;overflow:hidden;margin:10px 0 6px}
+#barra i{display:block;height:100%;width:0;background:var(--acao)}
+#status{font-size:13px;white-space:pre-wrap;word-break:break-all}
+.so{display:none}
+body.online .local{display:none!important}
+body:not(.online) .soOnline{display:none!important}
+body .soCel{display:none}
+@media (max-width:700px){
+  body .soCel{display:block}
+  #palco.real ~ .soCel{display:none}
+  #palco:not(.real) #moldura{width:max-content}
+  #palco:not(.real) #moldura canvas{width:auto;height:150px}
+  label.l{grid-template-columns:104px 1fr 42px}
+  input[type=range]{height:30px}
+  button{padding:10px 12px}
+  .topo{gap:8px}
+}
+.fx{border:1px solid var(--linha);border-radius:6px;padding:8px;margin:8px 0;background:#18181b}
+.fx.off{opacity:.5}
+.fx .cab{display:grid;grid-template-columns:22px 1fr 30px 30px 30px;gap:6px;align-items:center}
+.fx .cab b{font-size:13px;letter-spacing:.05em}
+.fx .cab button{padding:4px 0}
+.fx label.l{grid-template-columns:100px 1fr 42px}
+</style>
+</head>
+<body>
+<header>
+  <div class="topo">
+    <h1>GERADOR FURTA-COR</h1>
+    <span class="info" id="info"></span>
+    <button id="voltar" title="Cmd+Z">↶ Voltar</button><button id="refazer" title="Shift+Cmd+Z">↷ Refazer</button>
+    <label><input type="checkbox" id="guias"> linhas-guia das emendas</label>
+    <label><input type="checkbox" id="real"> ver em tamanho real (100%)</label>
+    <label><input type="checkbox" id="pausa"> pausar</label>
+  </div>
+  <div id="palco"><div id="moldura"></div></div>
+  <div class="dica soCel">Arraste a faixa para os lados para ver o telão inteiro.</div>
+</header>
+<main>
+  <section>
+    <h2>TAMANHO E LOOK</h2>
+    <label class="l">Tamanho<select id="tam">
+      <option value="2304x256">2304×256 · bar A e D</option>
+      <option value="1280x256">1280×256 · bar B e C</option>
+      <option value="7168x256">7168×256 · bar inteiro</option>
+      <option value="512x256">512×256 · tela Amstel</option>
+      <option value="1024x256">1024×256 · Amstel contínuo</option>
+      <option value="livre">livre</option></select><span></span></label>
+    <div class="lin so" id="livreBox">
+      <input type="number" id="lw" min="4" step="4" style="width:110px"> × <input type="number" id="lh" min="4" step="4" style="width:110px">
+      <span class="dica">múltiplos de 4</span>
+    </div>
+    <label class="l">Look<select id="look">
+      <option value="1">1 · FURTA-COR BASE</option>
+      <option value="2">2 · GRADIENTE MACIO</option>
+      <option value="3">3 · BLOCOS</option>
+      <option value="4">4 · LÍQUIDO</option>
+      <option value="5">5 · LINHAS</option>
+      <option value="8">6 · TECIDO</option></select><span></span></label>
+    <label class="l" id="formaBox">Variação<select id="forma"></select><span></span></label>
+    <div id="logoBox" class="so">
+      <label class="l">Logo<select id="logoSel"></select><span></span></label>
+      <div class="lin"><input type="file" id="logoArq" accept="image/*"><span class="dica">PNG com fundo transparente é o ideal. Fundo liso também serve.</span></div>
+      <label class="l">Tamanho do logo<input type="range" id="logoTam" min="0.4" max="3" step="0.02"><span class="v"></span></label>
+      <label class="l">Repetições<input type="range" id="logoRep" min="1" max="12" step="1"><span class="v"></span></label>
+    </div>
+  </section>
+
+  <section>
+    <h2>MOVIMENTO E TEXTURA</h2>
+    <label class="l">Semente<input type="range" id="seed" min="1" max="999" step="1"><span class="v"></span></label>
+    <div class="lin"><button id="sorteia">Sortear semente</button></div>
+    <label class="l">Velocidade<input type="range" id="vel" min="0" max="6" step="1"><span class="v"></span></label>
+    <label class="l">Escala<input type="range" id="esc" min="0.25" max="4" step="0.01"><span class="v"></span></label>
+    <label class="l">Dureza das bordas<input type="range" id="dur" min="0" max="1" step="0.01"><span class="v"></span></label>
+    <label class="l">Contraste<input type="range" id="contr" min="-0.5" max="1" step="0.01"><span class="v"></span></label>
+    <label class="l">Loop (segundos)<input type="number" id="loop" min="1" max="120" step="1"><span></span></label>
+    <div class="lin"><label><input type="checkbox" id="alfa"> fundo transparente</label><span class="dica" id="alfaDica"></span></div>
+  </section>
+
+  <section>
+    <h2>EFEITOS POR CIMA (PILHA)</h2>
+    <div class="lin"><select id="fxTipo" style="flex:1;width:auto">
+      <option value="vidro">VIDRO</option><option value="mosaico">MOSAICO</option><option value="linhas">LINHAS</option>
+      <option value="blocos">BLOCOS / DEGRAUS</option><option value="grao">GRÃO</option></select>
+      <button id="fxMais">+ Adicionar efeito</button></div>
+    <div id="fxLista"></div>
+    <p class="dica">O de cima da lista fica por cima de tudo. Pode repetir o mesmo efeito com ajustes diferentes. Máximo 6 ligados.</p>
+  </section>
+
+  <section>
+    <h2>PALETA</h2>
+    <label class="l">Paleta<select id="pal"></select><span></span></label>
+    <div id="cores"></div>
+    <div class="lin"><button id="maisCor">+ cor</button><span class="dica">A 1ª cor é a base (o fundo do furta-cor e das linhas). Máximo 8.</span></div>
+    <div id="solta">Arraste uma imagem aqui para tirar a paleta dela<br>
+      <span class="lin" style="justify-content:center"><input type="file" id="imgArq" accept="image/*">
+      cores: <input type="number" id="nCores" min="5" max="8" value="6" style="width:64px"></span></div>
+    <div class="lin"><input type="text" id="palNome" placeholder="nome da paleta" style="flex:1;min-width:120px">
+      <button id="salvaPal">Salvar paleta</button><button id="apagaPal">Apagar salva</button></div>
+  </section>
+
+  <section>
+    <h2 class="local">EXPORTAR · 60 fps</h2><h2 class="soOnline">ENVIAR E SALVAR</h2>
+    <p class="dica soOnline" style="margin:0 0 8px">Monte o gradiente e toque em "Copiar link deste gradiente". Mande o link para a Coleta Lab: ele abre exatamente como você deixou e vira vídeo do telão.</p>
+    <div class="lin soOnline"><button class="p" id="copiaLink">Copiar link deste gradiente</button></div>
+    <div class="lin local">Número <input type="number" id="numero" min="1" max="99" style="width:74px">
+      <label><input type="checkbox" id="teste"> clipe de teste</label></div>
+    <div class="dica local" id="nomeSaida"></div>
+    <div class="lin"><button class="p local" id="exporta">Exportar vídeo</button><button id="frame">Salvar 1 frame PNG</button>
+      <button id="cancela" class="local" disabled>Cancelar</button><button id="colaLink" class="local">Abrir link de gradiente</button></div>
+    <div id="barra" class="local"><i></i></div>
+    <div id="status">Pronto.</div>
+    <div class="lin local"><button data-abre="fundos">Abrir pasta FUNDOS</button><button data-abre="meio">Abrir pasta MEIO</button>
+      <button data-abre="previews">Abrir previews</button><button data-abre="testes">Abrir testes</button></div>
+    <div class="lin"><button id="salvaRec">Salvar receita (.json)</button>
+      <label>Abrir receita <input type="file" id="abreRec" accept=".json"></label></div>
+    <p class="dica local">Sem alfa sai .mov DXV (Resolume) na pasta FUNDOS, plano P3. Com fundo transparente sai ProRes 4444 na pasta MEIO, plano P2. O preview mp4 leve vai para previews. Nada é sobrescrito: se o nome já existe, mude o número.</p>
+  </section>
+</main>
+<script>window.ONLINE=true;window.LOGOS=["nova_id/newid_p-1.png", "nova_id/newid_p-2.png", "nova_id/newid_p-3.png", "nova_id/newid_p-4.png", "nova_id/newid_p-5.png", "nova_id/newid_p-6.png"];</script>
+<script src="shader.js"></script>
+<script src="paletas.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
